@@ -11,7 +11,7 @@ export class ChatService {
 
     private headers = new Headers({ 'Content-Type': 'application/json' });
     private options = new RequestOptions({ headers: this.headers }); // Create a request option
-    private url = 'http://localhost:3000/userClone/controllers';  // URL to access server
+    private url = 'http://localhost:3000/user/controllers';  // URL to access server
 
     constructor(private router: Router, private http: Http) {
     }

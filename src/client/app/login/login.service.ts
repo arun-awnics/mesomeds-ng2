@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Http, Response, Headers, RequestOptions } from '@angular/http';
 import { UserDetails } from '../shared/database/user-details';
-import { Observable } from 'rxjs/Rx';
+import { Observable } from 'rxjs/Observable';
 
 // Import RxJs required methods
 import 'rxjs/add/operator/toPromise';
@@ -27,6 +27,13 @@ export class LoginService {
 
     loggedOut() {
         this.router.navigate(['/']);
+    }
+
+    getUserByName(username: string): Promise<UserDetails> {
+        const uri = `${this.url}/findUserByName/${username}`;
+        return this.http.get(uri).toPromise()
+        .then(user => user)
+        .catch(this.handleError);
     }
 
     getUsers(): Promise<UserDetails[]> {

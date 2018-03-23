@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
+import { Component } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { LoginService } from './login.service';
 import { UserDetails } from '../shared/database/user-details';
+import { SecurityService } from '../shared/services/security.service';
+import { CookieService } from 'angular2-cookie/services/cookies.service';
 /**
  * This class represents the lazy loaded LoginComponent.
  */
@@ -11,28 +13,27 @@ import { UserDetails } from '../shared/database/user-details';
   templateUrl: 'login.component.html',
   styleUrls: ['login.component.css'],
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent {
 
-  private user: UserDetails;
+  user: UserDetails;
+  error: string;
 
   constructor(
-    private loginService: LoginService
+      private loginService: LoginService,
+      private router: Router,
+      private securityService: SecurityService,
+      private cookieService: CookieService
   ) { }
 
-  /**
-   * initialising form group
-   * @memberOf LoginComponent
-   */
-  ngOnInit(): void {
-    console.log('Init');
-  }
-
-  login(userName: string) {
-    console.log('Username: ' + userName);
-    this.loginService.getUserByName(userName)
-    .then((user) => {
-      this.user = user;
-      console.log('user: ',user);
+  login(email: string, password: string) {
+    this.loginService.login(email, password)
+    .subscribe(res => {
+      this.loginService.setLoginStatus(true);
+      this.cookieService.put('userDetails', JSON.stringify(res.user));
+      console.log('res ', res);
+      if(!res) { this.error = 'Email ID or password incorrect';}
+      this.securityService.setToken(res.token);
+      this.router.navigate([`/chat/${res.user.id}`]);
     });
   }
 }
